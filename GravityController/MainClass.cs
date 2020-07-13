@@ -25,12 +25,6 @@ namespace GravityController
             CheckForGravityChange();
             UpdateConfigs();
             RunConfigs();
-
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                Physics.gravity = Vector3.down;
-                _currentGravity = Vector3.down;
-            }
         }
 
         private void CheckForGravityChange()
