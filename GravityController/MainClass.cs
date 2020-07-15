@@ -76,6 +76,7 @@ namespace GravityController
         {
             if (!ConfigWatcher.UpdateIfDirty()) return;
             Physics.gravity = _defaultGravity;
+            _currentGravity = _defaultGravity;
             _activeConfigs.Clear();
         }
 
