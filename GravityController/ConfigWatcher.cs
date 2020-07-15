@@ -62,7 +62,7 @@ namespace GravityController
                     new GravityConfig(),
                     new GravityConfig
                     {
-                        gravity = Vector3.up * 9.81f,
+                        gravity = new SerializedVector3(0, 9.81f, 0),
                         trigger = KeyCode.O,
                     },
                 };
