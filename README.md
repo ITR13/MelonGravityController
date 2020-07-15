@@ -1,3 +1,5 @@
+Feel free to ask me any questions on discord: ITR#2941
+
 ### What it does  
 Allows you to change the gravity with the press of a button.  
 It reads \[Game Root Folder\]\UserData\GravityConfig.json to check for what gravity to set when what key is pressed.  
