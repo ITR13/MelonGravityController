@@ -64,6 +64,7 @@ namespace GravityController
                     {
                         gravity = new SerializedVector3(0, 9.81f, 0),
                         trigger = KeyCode.O,
+                        holdToActivate = true,
                     },
                 };
 

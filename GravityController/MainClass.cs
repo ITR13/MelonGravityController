@@ -45,24 +45,28 @@ namespace GravityController
         {
             foreach (var gravityConfig in ConfigWatcher.GravityConfigs)
             {
-                if (gravityConfig.trigger == KeyCode.None)
-                {
-                    if(gravityConfig.hold == KeyCode.None) continue;
+                var trigger = gravityConfig.trigger;
+                var hold = gravityConfig.hold;
 
-                    if (Input.GetKeyDown(gravityConfig.hold))
+                if (trigger == KeyCode.None) continue;
+                if (
+                    hold != KeyCode.None &&
+                    !Input.GetKey(hold)
+                ) continue;
+
+                if (gravityConfig.holdToActivate)
+                {
+                    if (Input.GetKeyDown(gravityConfig.trigger))
                     {
                         RunConfig(gravityConfig, true);
                     }
-                    if (Input.GetKeyUp(gravityConfig.hold))
+                    if (Input.GetKeyUp(gravityConfig.trigger))
                     {
                         RunConfig(gravityConfig, false);
                     }
                     continue;
                 }
-                if(
-                    gravityConfig.hold != KeyCode.None && 
-                    !Input.GetKey(gravityConfig.hold)
-                ) continue;
+
                 if(!Input.GetKeyDown(gravityConfig.trigger)) continue;
                 RunConfig(gravityConfig, !gravityConfig.Enabled);
             }
