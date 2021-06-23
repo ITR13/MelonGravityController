@@ -35,5 +35,5 @@ using MelonLoader;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: MelonModInfo(typeof(MainClass), "ITR's Gravity Controller", "1.0.2", "ITR")]
-[assembly: MelonModGame(null, null)]
+[assembly: MelonInfo(typeof(MainClass), "ITR's Gravity Controller", "1.0.2", "ITR")]
+[assembly: MelonGame(null, null)]

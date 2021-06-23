@@ -39,7 +39,8 @@
   <ItemGroup>
     <Reference Include="Il2Cppmscorlib">
     </Reference>
-    <Reference Include="MelonLoader.ModHandler">
+    <Reference Include="MelonLoader">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VRChat\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnhollowerBaseLib">

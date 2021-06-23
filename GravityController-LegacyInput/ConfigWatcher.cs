@@ -54,7 +54,7 @@ namespace GravityController
 
             if (!File.Exists(FullPath))
             {
-                MelonModLogger.Log(
+                MelonLogger.Msg(
                     $"Creating default config file at \"{FullPath}\""
                 );
                 var sampleConfig = new List<GravityConfig>
@@ -75,7 +75,7 @@ namespace GravityController
                 File.WriteAllText(FullPath, json);
             }
 
-            MelonModLogger.Log("Updating gravity configs");
+            MelonLogger.Msg("Updating gravity configs");
 
             GravityConfigs.Clear();
 
@@ -86,7 +86,7 @@ namespace GravityController
             }
             catch (Exception e)
             {
-                MelonModLogger.LogError(e.ToString());
+                MelonLogger.Error(e.ToString());
             }
 
             GravityConfigs = GravityConfigs ?? new List<GravityConfig>();

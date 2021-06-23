@@ -31,7 +31,7 @@ namespace GravityController
         {
             var newGravity = Physics.gravity;
             if (newGravity == _currentGravity) return;
-            MelonModLogger.Log(
+            MelonLogger.Msg(
                 "Detected change from {0} to {1}. Default was: {2}",
                 FormatVector3(_currentGravity),
                 FormatVector3(newGravity),
@@ -88,7 +88,7 @@ namespace GravityController
                 _activeConfigs.Remove(gravityConfig);
                 _activeConfigs.Add(gravityConfig);
 
-                MelonModLogger.Log(
+                MelonLogger.Msg(
                     "Setting gravity from {0} to {1}",
                     FormatVector3(_currentGravity),
                     FormatVector3(gravityConfig.gravity)
@@ -105,7 +105,7 @@ namespace GravityController
                 : _defaultGravity;
 
 
-            MelonModLogger.Log(
+            MelonLogger.Msg(
                 "Disabling gravity {0}. Setting gravity from {1} to {2}",
                 FormatVector3(gravityConfig.gravity),
                 FormatVector3(_currentGravity),
