@@ -6,6 +6,8 @@ namespace GravityController
 {
     public class MainClass : MelonMod
     {
+        public static bool ForceDisable;
+
         private Vector3 _defaultGravity, _currentGravity;
         private List<GravityConfig> _activeConfigs = new List<GravityConfig>();
 
@@ -13,6 +15,10 @@ namespace GravityController
         {
             _defaultGravity = Physics.gravity;
             _currentGravity = _defaultGravity;
+
+#if VRCHAT
+            WorldCheck.PatchMethods();
+#endif
         }
 
         public override void OnApplicationQuit()
@@ -22,6 +28,7 @@ namespace GravityController
 
         public override void OnUpdate()
         {
+            if (ForceDisable) return;
             CheckForGravityChange();
             UpdateConfigs();
             RunConfigs();
