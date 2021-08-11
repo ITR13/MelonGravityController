@@ -10,6 +10,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using UnhollowerBaseLib;
+using System.Net;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace GravityController
 {
@@ -55,7 +58,7 @@ namespace GravityController
 
             return true;
         }
-
+ 
         private static unsafe TDelegate Patch<TDelegate>(MethodBase originalMethod, IntPtr patchDetour)
         {
             IntPtr original = *(IntPtr*)UnhollowerSupport.MethodBaseToIl2CppMethodInfoPointer(originalMethod);
@@ -93,31 +96,40 @@ namespace GravityController
             alreadyCheckingWorld = true;
 
             // Check if black/whitelisted from EmmVRC - thanks Emilia and the rest of EmmVRC Staff
-            var www = new WWW($"https://dl.emmvrc.com/riskyfuncs.php?worldid={worldId}", null, new Dictionary<string, string>());
+            // [Lil Fluff] - Changed this from Unity WWW to a task based async System.Net WebRequest.
+            //   -- The Unity WWW module became obsolete in Unity 2019.
 
-            while (!www.isDone)
+            HttpWebRequest request = WebRequest.CreateHttp($"https://dl.emmvrc.com/riskyfuncs.php?worldid={worldId}");
+
+            Task<WebResponse> getResponse = request.GetResponseAsync();
+            while (!getResponse.IsCompleted)
                 yield return new WaitForEndOfFrame();
 
-            var result = www.text?.Trim().ToLower();
-            www.Dispose();
-            if (!string.IsNullOrWhiteSpace(result))
-                switch (result)
-                {
-                    case "allowed":
-                        MainClass.ForceDisable = false;
-                        checkedWorlds.Add(worldId, false);
-                        alreadyCheckingWorld = false;
-                        MelonLogger.Msg($"EmmVRC allows world '{worldId}'");
-                        yield break;
+            var result = (HttpWebResponse)getResponse.Result;
 
-                    case "denied":
-                        MainClass.ForceDisable = true;
-                        checkedWorlds.Add(worldId, true);
-                        alreadyCheckingWorld = false;
-                        MelonLogger.Msg($"EmmVRC denies world '{worldId}'");
-                        yield break;
+            if (result.StatusCode == HttpStatusCode.OK) {
+                using (var stream = result.GetResponseStream())
+                using (var reader = new StreamReader(stream)) {
+                    var parsedText = reader.ReadToEnd();
+                    if (!string.IsNullOrWhiteSpace(parsedText)) {
+                        switch (parsedText) {
+                            case "allowed":
+                                MainClass.ForceDisable = false;
+                                checkedWorlds.Add(worldId,false);
+                                alreadyCheckingWorld = false;
+                                MelonLogger.Msg($"EmmVRC allows world '{worldId}'");
+                                yield break;
+
+                            case "denied":
+                                MainClass.ForceDisable = true;
+                                checkedWorlds.Add(worldId,true);
+                                alreadyCheckingWorld = false;
+                                MelonLogger.Msg($"EmmVRC denies world '{worldId}'");
+                                yield break;
+                        }
+                    }
                 }
-
+            }
             // no result from server or they're currently down
             // Check tags then. should also be in cache as it just got downloaded
             API.Fetch<ApiWorld>(
