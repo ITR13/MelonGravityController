@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using MelonLoader;
 using UnityEngine;
+using VRC.Core;
 
 namespace GravityController
 {
@@ -17,8 +19,34 @@ namespace GravityController
             _currentGravity = _defaultGravity;
 
 #if VRCHAT
-            WorldCheck.PatchMethods();
+            //WorldCheck.PatchMethods();
 #endif
+        }
+
+        public override void OnSceneWasLoaded(int buildIndex,string sceneName) {
+            // Prevents extra checks for world join. Stolen from my other private mod,
+            // Original thanks to Arion-Kun https://github.com/Arion-Kun/PostProcessing/blob/f8ffd3bbedf67ddbf3b6fee56c7368ae4fe47a80/Start.cs#L49
+            switch (buildIndex) {
+                case 0:
+                case 1:
+                    break;
+                case -1:
+                    // Do stuff on world join.
+                    MelonCoroutines.Start(WaitForInWorld());
+                    break;
+                default:
+                    break;
+            }      
+        }
+
+        private IEnumerator WaitForInWorld() {
+            while (!RoomManagerExtensions.IsInWorld()) {
+                yield return null;
+            }
+            yield return new WaitForEndOfFrame();
+
+            // Hopefully this fixes the issues with Emm Check failing to load...
+            MelonCoroutines.Start(WorldCheck.CheckWorld());
         }
 
         public override void OnApplicationQuit()
@@ -126,6 +154,23 @@ namespace GravityController
         private string FormatVector3(Vector3 vector3)
         {
             return $"({vector3.x}, {vector3.y}, {vector3.z})";
+        }
+    }
+
+
+    // More stuff from my private mod, but its useful so sure, make it public i guess.
+    public static class RoomManagerExtensions {
+
+        public static bool IsInWorld() {
+            return GetWorld() != null || GetWorldInstance() != null;
+        }
+
+        public static ApiWorld GetWorld() {
+            return RoomManager.field_Internal_Static_ApiWorld_0;
+        }
+
+        public static ApiWorldInstance GetWorldInstance() {
+            return RoomManager.field_Internal_Static_ApiWorldInstance_0;
         }
     }
 }

@@ -23,53 +23,53 @@ namespace GravityController
         #region ModPatch
         // Also stolen from player rotator
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void FadeTo(IntPtr instancePtr, IntPtr fadeNamePtr, float fade, IntPtr actionPtr, IntPtr stackPtr);
+        //[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        //private delegate void FadeTo(IntPtr instancePtr, IntPtr fadeNamePtr, float fade, IntPtr actionPtr, IntPtr stackPtr);
 
-        private static FadeTo origFadeTo;
-        private static void FadeToPatch(IntPtr instancePtr, IntPtr fadeNamePtr, float fade, IntPtr actionPtr, IntPtr stackPtr)
-        {
-            if (instancePtr == IntPtr.Zero) return;
-            origFadeTo(instancePtr, fadeNamePtr, fade, actionPtr, stackPtr);
+        //private static FadeTo origFadeTo;
+        //private static void FadeToPatch(IntPtr instancePtr, IntPtr fadeNamePtr, float fade, IntPtr actionPtr, IntPtr stackPtr)
+        //{
+        //    if (instancePtr == IntPtr.Zero) return;
+        //    origFadeTo(instancePtr, fadeNamePtr, fade, actionPtr, stackPtr);
 
-            if (!IL2CPP.Il2CppStringToManaged(fadeNamePtr).Equals("BlackFade", StringComparison.Ordinal)
-                || !fade.Equals(0f)
-                || RoomManager.field_Internal_Static_ApiWorldInstance_0 == null) return;
+        //    if (!IL2CPP.Il2CppStringToManaged(fadeNamePtr).Equals("BlackFade", StringComparison.Ordinal)
+        //        || !fade.Equals(0f)
+        //        || RoomManager.field_Internal_Static_ApiWorldInstance_0 == null) return;
 
-            MelonCoroutines.Start(WorldCheck.CheckWorld());
-        }
+        //    MelonCoroutines.Start(WorldCheck.CheckWorld());
+        //}
 
-        internal static bool PatchMethods()
-        {
-            try
-            {
-                // Faded to and joined and initialized room
-                MethodInfo fadeMethod = typeof(VRCUiManager).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).First(
-                    m => m.Name.StartsWith("Method_Public_Void_String_Single_Action_")
-                         && m.Name.IndexOf("PDM", StringComparison.OrdinalIgnoreCase) == -1
-                         && m.GetParameters().Length == 3);
-                origFadeTo = Patch<FadeTo>(fadeMethod, GetDetour(nameof(FadeToPatch)));
-            }
-            catch (Exception e)
-            {
-                MelonLogger.Error("Failed to patch FadeTo\n" + e.Message);
-                return false;
-            }
+        //internal static bool PatchMethods()
+        //{
+        //    try
+        //    {
+        //        // Faded to and joined and initialized room
+        //        MethodInfo fadeMethod = typeof(VRCUiManager).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).First(
+        //            m => m.Name.StartsWith("Method_Public_Void_String_Single_Action_")
+        //                 && m.Name.IndexOf("PDM", StringComparison.OrdinalIgnoreCase) == -1
+        //                 && m.GetParameters().Length == 3);
+        //        origFadeTo = Patch<FadeTo>(fadeMethod, GetDetour(nameof(FadeToPatch)));
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        MelonLogger.Error("Failed to patch FadeTo\n" + e.Message);
+        //        return false;
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
  
-        private static unsafe TDelegate Patch<TDelegate>(MethodBase originalMethod, IntPtr patchDetour)
-        {
-            IntPtr original = *(IntPtr*)UnhollowerSupport.MethodBaseToIl2CppMethodInfoPointer(originalMethod);
-            MelonUtils.NativeHookAttach((IntPtr)(&original), patchDetour);
-            return Marshal.GetDelegateForFunctionPointer<TDelegate>(original);
-        }
+        //private static unsafe TDelegate Patch<TDelegate>(MethodBase originalMethod, IntPtr patchDetour)
+        //{
+        //    IntPtr original = *(IntPtr*)UnhollowerSupport.MethodBaseToIl2CppMethodInfoPointer(originalMethod);
+        //    MelonUtils.NativeHookAttach((IntPtr)(&original), patchDetour);
+        //    return Marshal.GetDelegateForFunctionPointer<TDelegate>(original);
+        //}
 
-        private static IntPtr GetDetour(string name)
-        {
-            return typeof(WorldCheck).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).MethodHandle.GetFunctionPointer();
-        }
+        //private static IntPtr GetDetour(string name)
+        //{
+        //    return typeof(WorldCheck).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).MethodHandle.GetFunctionPointer();
+        //}
 
         #endregion
 
@@ -147,13 +147,13 @@ namespace GravityController
                                     MainClass.ForceDisable = true;
                                     checkedWorlds.Add(worldId, true);
                                     alreadyCheckingWorld = false;
-                                    MelonLogger.Msg($"Found game or club tag in world world '{worldId}'");
+                                    MelonLogger.Msg($"Found game or club tag in world '{worldId}'");
                                     return;
                                 }
                             MainClass.ForceDisable = false;
                             checkedWorlds.Add(worldId, false);
                             alreadyCheckingWorld = false;
-                            MelonLogger.Msg($"Found no game or club tag in world world '{worldId}'");
+                            MelonLogger.Msg($"Found no game or club tag in world '{worldId}'");
                         }
                         else
                         {
