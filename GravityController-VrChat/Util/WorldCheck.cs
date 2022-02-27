@@ -1,41 +1,30 @@
 ﻿using System;
 using System.Collections;
 using Il2CppSystem.Collections.Generic;
-
 using MelonLoader;
 using UnityEngine;
-
 using VRC.Core;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using UnhollowerBaseLib;
 using System.Net;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace GravityController
-{
+namespace GravityController.Util {
     // Mostly stolen from https://github.com/Psychloor/PlayerRotater/blob/0b30e04cf85fdab769f6e0afc020e6d9bc9900ac/PlayerRotater/Utilities.cs#L76
-    class WorldCheck
-    {
+    class WorldCheck {
 
         private static bool alreadyCheckingWorld;
-        private static Dictionary<string, bool> checkedWorlds = new Dictionary<string, bool>();
+        private static Dictionary<string,bool> checkedWorlds = new Dictionary<string,bool>();
 
-        internal static IEnumerator CheckWorld()
-        {
-            if (alreadyCheckingWorld)
-            {
+        internal static IEnumerator CheckWorld() {
+            if (alreadyCheckingWorld) {
                 MelonLogger.Error("Attempted to check for world multiple times");
                 yield break;
             }
 
             var worldId = RoomManager.field_Internal_Static_ApiWorld_0.id;
 
-            if (checkedWorlds.ContainsKey(worldId))
-            {
-                MainClass.ForceDisable = checkedWorlds[worldId];
+            if (checkedWorlds.ContainsKey(worldId)) {
+                GravityMod.ForceDisable = checkedWorlds[worldId];
                 MelonLogger.Msg($"Using cached check {checkedWorlds[worldId]} for world '{worldId}'");
                 yield break;
             }
@@ -52,7 +41,7 @@ namespace GravityController
             while (!getResponse.IsCompleted)
                 yield return new WaitForEndOfFrame();
 
-            var result = (HttpWebResponse)getResponse.Result;
+            var result = (HttpWebResponse) getResponse.Result;
 
             if (result.StatusCode == HttpStatusCode.OK) {
                 using (var stream = result.GetResponseStream())
@@ -61,14 +50,14 @@ namespace GravityController
                     if (!string.IsNullOrWhiteSpace(parsedText)) {
                         switch (parsedText) {
                             case "allowed":
-                                MainClass.ForceDisable = false;
+                                GravityMod.ForceDisable = false;
                                 checkedWorlds.Add(worldId,false);
                                 alreadyCheckingWorld = false;
                                 MelonLogger.Msg($"EmmVRC allows world '{worldId}'");
                                 yield break;
 
                             case "denied":
-                                MainClass.ForceDisable = true;
+                                GravityMod.ForceDisable = true;
                                 checkedWorlds.Add(worldId,true);
                                 alreadyCheckingWorld = false;
                                 MelonLogger.Msg($"EmmVRC denies world '{worldId}'");
@@ -82,28 +71,23 @@ namespace GravityController
             API.Fetch<ApiWorld>(
                 worldId,
                 new Action<ApiContainer>(
-                    container =>
-                    {
+                    container => {
                         ApiWorld apiWorld;
-                        if ((apiWorld = container.Model.TryCast<ApiWorld>()) != null)
-                        {
+                        if ((apiWorld = container.Model.TryCast<ApiWorld>()) != null) {
                             foreach (var worldTag in apiWorld.tags)
-                                if (worldTag.IndexOf("game", StringComparison.OrdinalIgnoreCase) != -1
-                                    || worldTag.IndexOf("club", StringComparison.OrdinalIgnoreCase) != -1)
-                                {
-                                    MainClass.ForceDisable = true;
-                                    checkedWorlds.Add(worldId, true);
+                                if (worldTag.IndexOf("game",StringComparison.OrdinalIgnoreCase) != -1
+                                    || worldTag.IndexOf("club",StringComparison.OrdinalIgnoreCase) != -1) {
+                                    GravityMod.ForceDisable = true;
+                                    checkedWorlds.Add(worldId,true);
                                     alreadyCheckingWorld = false;
                                     MelonLogger.Msg($"Found game or club tag in world '{worldId}'");
                                     return;
                                 }
-                            MainClass.ForceDisable = false;
-                            checkedWorlds.Add(worldId, false);
+                            GravityMod.ForceDisable = false;
+                            checkedWorlds.Add(worldId,false);
                             alreadyCheckingWorld = false;
                             MelonLogger.Msg($"Found no game or club tag in world '{worldId}'");
-                        }
-                        else
-                        {
+                        } else {
                             MelonLogger.Error("Failed to cast ApiModel to ApiWorld");
                         }
                     }),
