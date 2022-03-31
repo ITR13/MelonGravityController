@@ -85,12 +85,12 @@ namespace GravityController.Util {
                 gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {mod.get_currentGravity.y}", () => { }, gravityIcon);
 
                 CustomSubMenu.AddButton("Increase", () => {
-                    if (mod.AdjustGravity(_melon_increment.Value)) {
+                    if (mod.AdjustGravity(-_melon_increment.Value)) {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity stronger.");
                     }
                 }, addIcon);
                 CustomSubMenu.AddButton("Decrease", () => {
-                    if (mod.AdjustGravity(-_melon_increment.Value)) {
+                    if (mod.AdjustGravity(_melon_increment.Value)) {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity weaker.");
                     }
                 }, minusIcon);
