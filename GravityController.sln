@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1169
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityController", "GravityController\GravityController.csproj", "{E0409A67-8F11-4A67-A7C3-9701CB428E63}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityController-LegacyInput", "GravityController-LegacyInput\GravityController-LegacyInput.csproj", "{06101EAB-4E7F-4295-A77E-73E4F9B4F9A5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityController-VrChat", "GravityController-VrChat\GravityController-VrChat.csproj", "{00A1867A-E861-4D0F-9125-A1BF3B550842}"
 EndProject
 Global
@@ -15,14 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E0409A67-8F11-4A67-A7C3-9701CB428E63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0409A67-8F11-4A67-A7C3-9701CB428E63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0409A67-8F11-4A67-A7C3-9701CB428E63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0409A67-8F11-4A67-A7C3-9701CB428E63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06101EAB-4E7F-4295-A77E-73E4F9B4F9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06101EAB-4E7F-4295-A77E-73E4F9B4F9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06101EAB-4E7F-4295-A77E-73E4F9B4F9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06101EAB-4E7F-4295-A77E-73E4F9B4F9A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00A1867A-E861-4D0F-9125-A1BF3B550842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00A1867A-E861-4D0F-9125-A1BF3B550842}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00A1867A-E861-4D0F-9125-A1BF3B550842}.Release|Any CPU.ActiveCfg = Release|Any CPU
