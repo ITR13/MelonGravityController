@@ -16,7 +16,7 @@
   "searchtags": ["Gravity", "Fly", "Mobility", "Antigravity", "Inverse", "Zero", "ITR"],
     "downloadlink": "https://github.com/ITR13/MelonGravityController/releases/download/1.1.0/GravityController-VrChat.dll",
     "sourcelink": "https://github.com/ITR13/MelonGravityController",
-    "changelog": "Pulled PRs and updated world check",
+    "changelog": "Pulled PRs. Updated world check. Made mod compatible with other mods that control gravity (noclip). Fixed bug when releasing hold key before trigger.",
   "embedcolor": "007F00",
   }
 ]
