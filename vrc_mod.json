@@ -1,0 +1,22 @@
+[
+  {
+    "_id": 91,
+    "name": "VRC Gravity Mod",
+    "modversion": "1.1.0",
+    "vrchatversion": "Build 1207",
+    "loaderversion": "0.5.4",
+    "modtype": "Mod",
+    "author": "ITR, lil-fluff, BLANKE",
+    "description": "Gives you control over local gravity. Check https://github.com/ITR13/MelonGravityController/blob/master/README.md for details",
+    "requirements": [
+        "[VRChatUtilityKit](https://github.com/SleepyVRC/Mods/releases)",
+        "[UIExpansionKit](https://github.com/SleepyVRC/Mods/releases) (optional)",
+        "[ActionMenuApi](https://github.com/gompoc/VRChatMods/releases) (optional)",
+    ],
+  "searchtags": ["Gravity", "Fly", "Mobility", "Antigravity", "Inverse", "Zero", "ITR"],
+    "downloadlink": "https://github.com/ITR13/MelonGravityController/releases/download/1.1.0/GravityController-VrChat.dll",
+    "sourcelink": "https://github.com/ITR13/MelonGravityController",
+    "changelog": "Pulled PRs and updated world check",
+  "embedcolor": "007F00",
+  }
+]
