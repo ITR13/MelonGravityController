@@ -20,6 +20,7 @@ namespace GravityController.Util {
         private GravityMod mod;
         private MelonPreferences_Category _melon_selfCategory;
         internal MelonPreferences_Entry<bool> _melon_showDebugMessages, _melon_useIcons;
+        internal MelonPreferences_Entry<float> _melon_increment;
 
         internal PedalOption gravityRadialDisplay;
 
@@ -32,6 +33,7 @@ namespace GravityController.Util {
             _melon_selfCategory = MelonPreferences.CreateCategory(ModInfo.InternalName);
             _melon_showDebugMessages = (MelonPreferences_Entry<bool>) _melon_selfCategory.CreateEntry("showDebugMessages",GravityMod.ShowDebugMessages,"Show Debug",false);
             _melon_useIcons = (MelonPreferences_Entry<bool>)_melon_selfCategory.CreateEntry("showSpecialIcons", GravityMod.ShowSpecialIcons, "Show Icon", "Shows the gravity amout visually when changed as an icon in the action menu.", false);
+            _melon_increment = (MelonPreferences_Entry<float>)_melon_selfCategory.CreateEntry("Increment", GravityMod.Increment, "Increment", "Set the increment of the value that the ActionMenu Adjusts", false);
 
             // In case there was a previous setting, sync on start:
             UpdateFromMelonPrefs();
@@ -41,6 +43,7 @@ namespace GravityController.Util {
         internal void UpdateFromMelonPrefs() {
             GravityMod.ShowDebugMessages = _melon_showDebugMessages.Value;
             GravityMod.ShowSpecialIcons = _melon_useIcons.Value;
+            GravityMod.Increment = _melon_increment.Value;
         }
 
         // Build and execute ActionMenu
@@ -82,12 +85,12 @@ namespace GravityController.Util {
                 gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {mod.get_currentGravity.y}", () => { }, gravityIcon);
 
                 CustomSubMenu.AddButton("Increase", () => {
-                    if (mod.AdjustGravity(-1)) {
+                    if (mod.AdjustGravity(-_melon_increment.Value)) {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity stronger.");
                     }
                 }, addIcon);
                 CustomSubMenu.AddButton("Decrease", () => {
-                    if (mod.AdjustGravity(1)) {
+                    if (mod.AdjustGravity(_melon_increment.Value)) {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity weaker.");
                     }
                 }, minusIcon);

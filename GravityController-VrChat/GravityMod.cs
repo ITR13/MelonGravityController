@@ -18,7 +18,7 @@ namespace GravityController {
         public const string
             Title = "GravityController",
             Copyright = "Copyright © 2022",
-            Version = "1.0.7",
+            Version = "1.0.8",
             Authors = "ITR13, lil-fluff",
             DownloadLink = "https://github.com/lil-fluff/MelonGravityController",
             InternalName = "VRC Gravity Mod";
@@ -34,6 +34,7 @@ namespace GravityController {
         public static bool ShowSpecialIcons;
         public static bool wasDebugChanged = false;
         public static bool wasGravityReset = false;
+        public static float Increment = 5;
 
         private Vector3 _baseGravity, _defaultGravity, _currentGravity;
         private List<GravityConfig> _activeConfigs = new List<GravityConfig>();
