@@ -6,14 +6,13 @@ using GravityController.Config;
 using GravityController.Util;
 using MelonLoader;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using VRC.Core;
 
-[assembly: MelonInfo(typeof(GravityMod),ModInfo.InternalName,ModInfo.Version,ModInfo.Authors)]
+[assembly: MelonInfo(typeof(GravityMod), ModInfo.InternalName, ModInfo.Version, ModInfo.Authors)]
 [assembly: MelonOptionalDependencies("UIExpansionKit", "ActionMenuApi")]
-[assembly: MelonGame("VRChat","VRChat")]
+[assembly: MelonGame("VRChat", "VRChat")]
 
-namespace GravityController {
+namespace GravityController
+{
     public static class ModInfo {
         public const string
             Title = "GravityController",
@@ -44,6 +43,7 @@ namespace GravityController {
 
         public override void OnApplicationStart() {
             instance = this;
+            WorldCheck.Init();
 
             // Acquire startup settings:
             _baseGravity = Physics.gravity;
@@ -83,8 +83,7 @@ namespace GravityController {
             wasGravityReset = false;
 
             // This fixes the issues with Emm Check failing to load...
-            MelonCoroutines.Start(WorldCheck.CheckWorld());
-
+            
             // Force a check against the filesystem on world join because for some reason
             // calling SetGravity() was triggering a config update?
             UpdateConfigs();

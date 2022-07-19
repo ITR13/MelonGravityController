@@ -1,19 +1,15 @@
-﻿using ActionMenuApi;
-using ActionMenuApi.Api;
-using ActionMenuApi.Types;
+﻿using ActionMenuApi.Api;
 using MelonLoader;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnhollowerRuntimeLib;
 using UnityEngine;
 
-namespace GravityController.Util {
+namespace GravityController.Util
+{
     internal class VRCIntegration {
 
         private static AssetBundle iconsAssetBundle = null;
