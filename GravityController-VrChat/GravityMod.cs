@@ -7,7 +7,7 @@ using GravityController.Util;
 using MelonLoader;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(GravityMod), ModInfo.InternalName, ModInfo.Version, ModInfo.Authors)]
+[assembly: MelonInfo(typeof(GravityMod), ModInfo.InternalName, ModInfo.Version, ModInfo.Authors, ModInfo.DownloadLink)]
 [assembly: MelonOptionalDependencies("UIExpansionKit", "ActionMenuApi")]
 [assembly: MelonGame("VRChat", "VRChat")]
 
@@ -17,8 +17,8 @@ namespace GravityController
         public const string
             Title = "GravityController",
             Copyright = "Copyright © 2022",
-            Version = "1.0.8",
-            Authors = "ITR13, lil-fluff",
+            Version = "1.1.0",
+            Authors = "ITR13, lil-fluff, BLANKE",
             DownloadLink = "https://github.com/lil-fluff/MelonGravityController",
             InternalName = "VRC Gravity Mod";
 
