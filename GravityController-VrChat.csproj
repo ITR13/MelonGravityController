@@ -76,7 +76,8 @@
     <Reference Include="VRCCore-Standalone">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VRChat\MelonLoader\Managed\VRCCore-Standalone.dll</HintPath>
     </Reference>
-    <Reference Include="VRChatUtilityKit">
+    <Reference Include="VRChatUtilityKit, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VRChat\Mods\VRChatUtilityKit.dll</HintPath>
     </Reference>
   </ItemGroup>

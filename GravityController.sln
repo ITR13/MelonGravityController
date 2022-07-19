@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityController-VrChat", "GravityController-VrChat\GravityController-VrChat.csproj", "{00A1867A-E861-4D0F-9125-A1BF3B550842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityController-VrChat", "GravityController-VrChat.csproj", "{00A1867A-E861-4D0F-9125-A1BF3B550842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
