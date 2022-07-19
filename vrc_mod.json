@@ -1,22 +1,20 @@
-[
-  {
-    "_id": 91,
-    "name": "VrcGravityController",
-    "modversion": "1.1.0",
-    "vrchatversion": "Build 1207",
-    "loaderversion": "0.5.4",
-    "modtype": "Mod",
-    "author": "ITR, lil-fluff, BLANKE",
-    "description": "Gives you control over local gravity. Check https://github.com/ITR13/MelonGravityController/blob/master/README.md for details",
-    "requirements": [
-        "[VRChatUtilityKit](https://github.com/SleepyVRC/Mods/releases)",
-        "[UIExpansionKit](https://github.com/SleepyVRC/Mods/releases) (optional)",
-        "[ActionMenuApi](https://github.com/gompoc/VRChatMods/releases) (optional)",
-    ],
+{
+  "_id": 91,
+  "name": "VrcGravityController",
+  "modversion": "1.1.0",
+  "vrchatversion": "Build 1207",
+  "loaderversion": "0.5.4",
+  "modtype": "Mod",
+  "author": "ITR, lil-fluff, BLANKE",
+  "description": "Gives you control over local gravity. Check https://github.com/ITR13/MelonGravityController/blob/master/README.md for details",
+  "requirements": [
+    "[VRChatUtilityKit](https://github.com/SleepyVRC/Mods/releases)",
+    "[UIExpansionKit](https://github.com/SleepyVRC/Mods/releases) (optional)",
+    "[ActionMenuApi](https://github.com/gompoc/VRChatMods/releases) (optional)",
+  ],
   "searchtags": ["Gravity", "Fly", "Mobility", "Antigravity", "Inverse", "Zero", "ITR"],
-    "downloadlink": "https://github.com/ITR13/MelonGravityController/releases/download/1.1.0/GravityController-VrChat.dll",
-    "sourcelink": "https://github.com/ITR13/MelonGravityController",
-    "changelog": "Pulled PRs. Updated world check. Made mod compatible with other mods that control gravity (noclip). Fixed bug when releasing hold key before trigger.",
+  "downloadlink": "https://github.com/ITR13/MelonGravityController/releases/download/1.1.0/GravityController-VrChat.dll",
+  "sourcelink": "https://github.com/ITR13/MelonGravityController",
+  "changelog": "Pulled PRs. Updated world check. Made mod compatible with other mods that control gravity (noclip). Fixed bug when releasing hold key before trigger.",
   "embedcolor": "007F00",
-  }
-]
+}
