@@ -21,5 +21,5 @@ The config file has the fields:
 ### How to use (UI)
 If you have the ActionMenuAPI and the VrcUtilityKit you can use the gravity mod through the action menu  
 Open the Action Menu and find "Gravity". On the bottom you can see your current grabity  
-On the left side you can increase or decrease gravity in steps of 5. This can be changed in the melon-loader config (
+On the left side you can increase or decrease gravity in steps of 5. This can be changed in the melon-loader config.
 On the right side you can set gravity to 0 or reset it to the default world gravity
