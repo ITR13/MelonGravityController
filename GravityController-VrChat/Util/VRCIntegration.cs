@@ -11,6 +11,7 @@ using UnityEngine;
 namespace GravityController.Util
 {
     internal class VRCIntegration {
+        private bool _init;
 
         private static AssetBundle iconsAssetBundle = null;
         private GravityMod mod;
@@ -44,6 +45,8 @@ namespace GravityController.Util
 
         // Build and execute ActionMenu
         internal void InitActionMenu() {
+            if (_init) return;
+
             // Load actionmenu Icon Bundle:
             var assem = Assembly.GetExecutingAssembly();
             using (var stream = assem.GetManifestResourceStream(assem.GetManifestResourceNames().Single(str => str.Contains("gravityicons.assetbundle")))) {
@@ -91,6 +94,8 @@ namespace GravityController.Util
                     }
                 }, minusIcon);
             }), gravityIcon);
+
+            _init = true;
         }
 
         internal void updateGravityAmount() {
