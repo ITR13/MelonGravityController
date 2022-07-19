@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GravityController;
 using GravityController.Config;
@@ -14,7 +13,8 @@ using UnityEngine;
 
 namespace GravityController
 {
-    public static class ModInfo {
+    public static class ModInfo
+    {
         public const string
             Title = "GravityController",
             Copyright = "Copyright © 2022",
@@ -24,7 +24,8 @@ namespace GravityController
             InternalName = "VRC Gravity Mod";
     }
 
-    public class GravityMod : MelonMod {
+    public class GravityMod : MelonMod
+    {
         public static GravityMod instance;
 
         public static bool ForceDisable;
@@ -33,12 +34,18 @@ namespace GravityController
         public static bool WasDebugChanged = false;
         public static bool RecalculateGravity = false;
         public static float Increment = 5;
-        private Dictionary<Vector3, List<GravityConfig>> activeConfigs = new Dictionary<Vector3, List<GravityConfig>>();
 
-        private static bool haveAMenu;
-        private static VRCIntegration integrator;
+        public Vector3 BaseGravity { get; private set; }
+        public Vector3 CurrentGravity { get; private set; }
+        public Vector3 AdditionalGravity { get; private set; }
 
-        public override void OnApplicationStart() {
+        private Dictionary<Vector3, List<GravityConfig>> _activeConfigs = new Dictionary<Vector3, List<GravityConfig>>();
+
+        private static bool _haveAMenu;
+        private static VRCIntegration _integrator;
+
+        public override void OnApplicationStart()
+        {
             instance = this;
             WorldCheck.Init();
 
@@ -47,25 +54,28 @@ namespace GravityController
             CurrentGravity = BaseGravity;
 
             // Detect UIExpansionKit/ActionMenuApi:
-            haveAMenu = MelonHandler.Mods.Any(x => x.Info.Name.Equals("ActionMenuApi"));
+            _haveAMenu = MelonHandler.Mods.Any(x => x.Info.Name.Equals("ActionMenuApi"));
 
-            integrator = new VRCIntegration();
-            if (!haveAMenu)
+            _integrator = new VRCIntegration();
+            if (!_haveAMenu)
             {
                 MelonLogger.Msg("This mod is designed to integrate with ActionMenuApi for easier access to the settings.");
             }
             else
             {
-                integrator.InitActionMenu();
+                _integrator.InitActionMenu();
             }
         }
 
-        public override void OnApplicationQuit() {
+        public override void OnApplicationQuit()
+        {
             ConfigWatcher.Unload();
         }
 
-        public override void OnUpdate() {
-            if (WasDebugChanged != ShowDebugMessages) {
+        public override void OnUpdate()
+        {
+            if (WasDebugChanged != ShowDebugMessages)
+            {
                 MelonLogger.Msg("Debug set to " + ShowDebugMessages);
                 WasDebugChanged = ShowDebugMessages;
             }
@@ -74,17 +84,20 @@ namespace GravityController
         }
 
         // Call updates to anything changed in the MelonPrefs:
-        public override void OnPreferencesSaved() {
-            integrator.UpdateFromMelonPrefs();
+        public override void OnPreferencesSaved()
+        {
+            _integrator.UpdateFromMelonPrefs();
         }
 
-        private void CheckForGravityChange() {
+        private void CheckForGravityChange()
+        {
             if (Physics.gravity == CurrentGravity)
             {
                 return;
             }
             RecalculateGravity = true;
-            if (ShowDebugMessages) {
+            if (ShowDebugMessages)
+            {
                 MelonLogger.Msg("Detected change from {0} to {1}. Default was: {2}",
                     FormatVector3(CurrentGravity),
                     FormatVector3(Physics.gravity),
@@ -95,7 +108,8 @@ namespace GravityController
             BaseGravity = Physics.gravity;
         }
 
-        private void ExecuteChanges() {
+        private void ExecuteChanges()
+        {
 
             UpdateConfigs();
             RunConfigs();
@@ -104,7 +118,7 @@ namespace GravityController
             RecalculateGravity = false;
             if (ForceDisable)
             {
-                if(Physics.gravity != BaseGravity)
+                if (Physics.gravity != BaseGravity)
                 {
                     if (ShowDebugMessages)
                     {
@@ -117,8 +131,8 @@ namespace GravityController
             }
 
 
-            var newGravity = activeConfigs.TryGetValue(BaseGravity, out var currentConfigs) 
-                ? currentConfigs.Count > 0 
+            var newGravity = _activeConfigs.TryGetValue(BaseGravity, out var currentConfigs)
+                ? currentConfigs.Count > 0
                     ? currentConfigs[currentConfigs.Count - 1].gravity
                     : BaseGravity
                 : BaseGravity;
@@ -135,7 +149,7 @@ namespace GravityController
 
             CurrentGravity = newGravity;
             Physics.gravity = newGravity;
-            integrator.updateGravityAmount();
+            _integrator.updateGravityAmount();
         }
 
         // NEW in 1.0.6 - Mainly used as utility functions for VRC/ActionMenu Integration.
@@ -143,8 +157,9 @@ namespace GravityController
         // Reset all changes to _defaultGravity. This is always available and DOES NOT RESPECT RISKY CHECK.
         // I chose to do this because being able to reset your gravity to Unity default (or the world's default, really)
         // is something I consider to be a critical failsafe.
-        internal void ResetGravity() {
-            activeConfigs.Clear();
+        internal void ResetGravity()
+        {
+            _activeConfigs.Clear();
             AdditionalGravity = new Vector3(0, 0, 0);
             RecalculateGravity = true;
         }
@@ -152,17 +167,19 @@ namespace GravityController
         // Adjust gravity by amount. Negitive numbers increase gravity strength, positive decreases.
         // This does respect Risky Check(s).
         // TODO: Support multidirectional gravity later... maybe.
-        internal bool AdjustGravity(float amt) {
+        internal bool AdjustGravity(float amt)
+        {
             if (ForceDisable) return false;
             AdditionalGravity += new Vector3(0, amt, 0);
             RecalculateGravity = true;
             return true;
         }
 
-        internal bool SetGravity(float amt) {
+        internal bool SetGravity(float amt)
+        {
             if (ForceDisable) return false;
             AdditionalGravity = new Vector3(0, amt, 0) - BaseGravity;
-            activeConfigs.Clear();
+            _activeConfigs.Clear();
             RecalculateGravity = true;
             return true;
         }
@@ -170,25 +187,30 @@ namespace GravityController
 
         private bool IsEnabled(GravityConfig gravityConfig)
         {
-            return activeConfigs.TryGetValue(BaseGravity, out var currentConfigs) && 
+            return _activeConfigs.TryGetValue(BaseGravity, out var currentConfigs) &&
                 currentConfigs.Contains(gravityConfig);
         }
 
         // Checking pressed keys against configured input - default method from ITR13
-        private void RunConfigs() {
-            foreach (var gravityConfig in ConfigWatcher.GravityConfigs) {
+        private void RunConfigs()
+        {
+            foreach (var gravityConfig in ConfigWatcher.GravityConfigs)
+            {
                 var trigger = gravityConfig.trigger;
                 var hold = gravityConfig.hold;
 
                 if (trigger == KeyCode.None) continue;
                 if (hold != KeyCode.None && !Input.GetKey(hold)) continue;
 
-                if (gravityConfig.holdToActivate) {
-                    if (Input.GetKeyDown(gravityConfig.trigger)) {
-                        RunConfig(gravityConfig,true);
+                if (gravityConfig.holdToActivate)
+                {
+                    if (Input.GetKeyDown(gravityConfig.trigger))
+                    {
+                        RunConfig(gravityConfig, true);
                     }
-                    if (Input.GetKeyUp(gravityConfig.trigger)) {
-                        RunConfig(gravityConfig,false);
+                    if (Input.GetKeyUp(gravityConfig.trigger))
+                    {
+                        RunConfig(gravityConfig, false);
                     }
                     continue;
                 }
@@ -200,9 +222,10 @@ namespace GravityController
 
         // Checking for 'dirty' filesystem changes, and hotloading them.
         // This WILL reset any user gravity changes back to _defaultGravity (captured at world join).
-        private void UpdateConfigs() {
+        private void UpdateConfigs()
+        {
             if (!ConfigWatcher.UpdateIfDirty()) return;
-            activeConfigs.Clear();
+            _activeConfigs.Clear();
             RecalculateGravity = true;
         }
 
@@ -210,13 +233,14 @@ namespace GravityController
         private void RunConfig(GravityConfig gravityConfig, bool enable)
         {
             RecalculateGravity = true;
-            if (!activeConfigs.TryGetValue(BaseGravity, out var currentConfigs))
+            if (!_activeConfigs.TryGetValue(BaseGravity, out var currentConfigs))
             {
                 currentConfigs = new List<GravityConfig>();
-                activeConfigs.Add(BaseGravity, currentConfigs);
+                _activeConfigs.Add(BaseGravity, currentConfigs);
             }
 
-            if (enable) {
+            if (enable)
+            {
                 if (ShowDebugMessages)
                 {
                     MelonLogger.Msg("Enabling gravity preset {0}.", FormatVector3(gravityConfig.gravity));
@@ -229,20 +253,19 @@ namespace GravityController
 
             currentConfigs.Remove(gravityConfig);
 
-            if (ShowDebugMessages) {
+            if (ShowDebugMessages)
+            {
                 MelonLogger.Msg("Disabling gravity preset {0}.", FormatVector3(gravityConfig.gravity));
             }
         }
 
-        public Vector3 BaseGravity { get; private set; }
-        public Vector3 CurrentGravity { get; set; }
-        public Vector3 AdditionalGravity { get; set; }
-
-        private string FormatVector3(Vector3 vector3) {
+        private string FormatVector3(Vector3 vector3)
+        {
             return $"({vector3.x}, {vector3.y}, {vector3.z})";
         }
 
-        public enum chgDir {
+        public enum chgDir
+        {
             INCREASE,
             DECREASE
         }

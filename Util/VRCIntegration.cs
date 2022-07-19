@@ -9,25 +9,26 @@ using UnityEngine;
 
 namespace GravityController.Util
 {
-    internal class VRCIntegration {
-        private bool _init;
+    internal class VRCIntegration
+    {
+        private GravityMod _mod;
+        private AssetBundle _iconsAssetBundle = null;
 
-        private static AssetBundle iconsAssetBundle = null;
-        private GravityMod mod;
         private MelonPreferences_Category _melon_selfCategory;
-        internal MelonPreferences_Entry<bool> _melon_showDebugMessages, _melon_useIcons;
-        internal MelonPreferences_Entry<float> _melon_increment;
+        private MelonPreferences_Entry<bool> _melon_showDebugMessages, _melon_useIcons;
+        private MelonPreferences_Entry<float> _melon_increment;
 
-        internal PedalOption gravityRadialDisplay;
+        private PedalOption _gravityRadialDisplay;
 
-        private Texture2D addIcon, minusIcon, refreshIcon, gravityIcon, zeroIcon;
+        private Texture2D _addIcon, _minusIcon, _refreshIcon, _gravityIcon, _zeroIcon;
 
-        public VRCIntegration() {
-            mod = GravityMod.instance;
+        public VRCIntegration()
+        {
+            _mod = GravityMod.instance;
 
             // Setup melonprefs:
             _melon_selfCategory = MelonPreferences.CreateCategory(ModInfo.InternalName);
-            _melon_showDebugMessages = (MelonPreferences_Entry<bool>) _melon_selfCategory.CreateEntry("showDebugMessages",GravityMod.ShowDebugMessages,"Show Debug",false);
+            _melon_showDebugMessages = (MelonPreferences_Entry<bool>)_melon_selfCategory.CreateEntry("showDebugMessages", GravityMod.ShowDebugMessages, "Show Debug", false);
             _melon_useIcons = (MelonPreferences_Entry<bool>)_melon_selfCategory.CreateEntry("showSpecialIcons", GravityMod.ShowSpecialIcons, "Show Icon", "Shows the gravity amout visually when changed as an icon in the action menu.", false);
             _melon_increment = (MelonPreferences_Entry<float>)_melon_selfCategory.CreateEntry("Increment", GravityMod.Increment, "Increment", "Set the increment of the value that the ActionMenu Adjusts", false);
 
@@ -36,75 +37,86 @@ namespace GravityController.Util
         }
 
         // Keep vars in sync with config from prefs:
-        internal void UpdateFromMelonPrefs() {
+        internal void UpdateFromMelonPrefs()
+        {
             GravityMod.ShowDebugMessages = _melon_showDebugMessages.Value;
             GravityMod.ShowSpecialIcons = _melon_useIcons.Value;
             GravityMod.Increment = _melon_increment.Value;
         }
 
         // Build and execute ActionMenu
-        internal void InitActionMenu() {
-            if (_init) return;
-
+        internal void InitActionMenu()
+        {
             // Load actionmenu Icon Bundle:
             var assem = Assembly.GetExecutingAssembly();
-            using (var stream = assem.GetManifestResourceStream(assem.GetManifestResourceNames().Single(str => str.Contains("gravityicons.assetbundle")))) {
-                using (var tempStream = new MemoryStream((int)stream.Length)) {
+            using (var stream = assem.GetManifestResourceStream(assem.GetManifestResourceNames().Single(str => str.Contains("gravityicons.assetbundle"))))
+            {
+                using (var tempStream = new MemoryStream((int)stream.Length))
+                {
                     stream.CopyTo(tempStream);
-                    iconsAssetBundle = AssetBundle.LoadFromMemory_Internal(tempStream.ToArray(), 0);
-                    iconsAssetBundle.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+                    _iconsAssetBundle = AssetBundle.LoadFromMemory_Internal(tempStream.ToArray(), 0);
+                    _iconsAssetBundle.hideFlags |= HideFlags.DontUnloadUnusedAsset;
                 }
             }
 
-            addIcon = iconsAssetBundle.LoadAsset_Internal("Assets/noun_Plus.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
-            addIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            minusIcon = iconsAssetBundle.LoadAsset_Internal("Assets/noun_Minus.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
-            minusIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            refreshIcon = iconsAssetBundle.LoadAsset_Internal("Assets/noun_Refresh.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
-            refreshIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            gravityIcon = iconsAssetBundle.LoadAsset_Internal("Assets/noun_Gravity.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
-            gravityIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
-            zeroIcon = iconsAssetBundle.LoadAsset_Internal("Assets/noun_Off.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
-            zeroIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            _addIcon = _iconsAssetBundle.LoadAsset_Internal("Assets/noun_Plus.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
+            _addIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            _minusIcon = _iconsAssetBundle.LoadAsset_Internal("Assets/noun_Minus.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
+            _minusIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            _refreshIcon = _iconsAssetBundle.LoadAsset_Internal("Assets/noun_Refresh.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
+            _refreshIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            _gravityIcon = _iconsAssetBundle.LoadAsset_Internal("Assets/noun_Gravity.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
+            _gravityIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+            _zeroIcon = _iconsAssetBundle.LoadAsset_Internal("Assets/noun_Off.png", Il2CppType.Of<Texture2D>()).Cast<Texture2D>();
+            _zeroIcon.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 
             // Build Menu:
-            VRCActionMenuPage.AddSubMenu(ActionMenuPage.Main,"Gravity",new Action(() => {
-                CustomSubMenu.AddButton("Reset Gravity", () => {
-                    mod.ResetGravity();
+            VRCActionMenuPage.AddSubMenu(ActionMenuPage.Main, "Gravity", new Action(() =>
+            {
+                CustomSubMenu.AddButton("Reset Gravity", () =>
+                {
+                    _mod.ResetGravity();
                     MelonLogger.Msg("Resetting gravity to default.");
-                }, refreshIcon);
-                CustomSubMenu.AddButton("Zero Gravity", () => {
-                    if (mod.SetGravity(0)) {
+                }, _refreshIcon);
+                CustomSubMenu.AddButton("Zero Gravity", () =>
+                {
+                    if (_mod.SetGravity(0))
+                    {
                         MelonLogger.Msg("Set gravity to 0.");
                     }
-                }, zeroIcon);
+                }, _zeroIcon);
 
                 // Adding button to show the gravity amount:
-                gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {mod.CurrentGravity.y}", () => { }, gravityIcon);
+                _gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {_mod.CurrentGravity.y}", () => { }, _gravityIcon);
 
-                CustomSubMenu.AddButton("Increase", () => {
-                    if (mod.AdjustGravity(-_melon_increment.Value)) {
+                CustomSubMenu.AddButton("Increase", () =>
+                {
+                    if (_mod.AdjustGravity(-_melon_increment.Value))
+                    {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity stronger.");
                     }
-                }, addIcon);
-                CustomSubMenu.AddButton("Decrease", () => {
-                    if (mod.AdjustGravity(_melon_increment.Value)) {
+                }, _addIcon);
+                CustomSubMenu.AddButton("Decrease", () =>
+                {
+                    if (_mod.AdjustGravity(_melon_increment.Value))
+                    {
                         if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity weaker.");
                     }
-                }, minusIcon);
-            }), gravityIcon);
-
-            _init = true;
+                }, _minusIcon);
+            }), _gravityIcon);
         }
 
-        internal void updateGravityAmount() {
-            if (gravityRadialDisplay != null) {
-                if (GravityMod.ShowSpecialIcons) {
-                    var whichIcon = mod.CurrentGravity.y > mod.BaseGravity.y ? minusIcon :
-                        mod.CurrentGravity.y < mod.BaseGravity.y ? addIcon : gravityIcon;
-                    gravityRadialDisplay.prop_Texture2D_0 = whichIcon;
+        internal void updateGravityAmount()
+        {
+            if (_gravityRadialDisplay != null)
+            {
+                if (GravityMod.ShowSpecialIcons)
+                {
+                    var whichIcon = _mod.CurrentGravity.y > _mod.BaseGravity.y ? _minusIcon :
+                        _mod.CurrentGravity.y < _mod.BaseGravity.y ? _addIcon : _gravityIcon;
+                    _gravityRadialDisplay.prop_Texture2D_0 = whichIcon;
                 }
-                gravityRadialDisplay.prop_String_0 = $"Gravity: {mod.CurrentGravity.y}";
+                _gravityRadialDisplay.prop_String_0 = $"Gravity: {_mod.CurrentGravity.y}";
             }
         }
     }
