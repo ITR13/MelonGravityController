@@ -1,7 +1,7 @@
 [
   {
     "_id": 91,
-    "name": "VRC Gravity Controller",
+    "name": "VrcGravityController",
     "modversion": "1.1.0",
     "vrchatversion": "Build 1207",
     "loaderversion": "0.5.4",
