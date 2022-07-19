@@ -55,6 +55,7 @@ namespace GravityController
         public Vector3 AdditionalGravity { get; private set; }
 
         private Dictionary<Vector3, List<GravityConfig>> _activeConfigs = new Dictionary<Vector3, List<GravityConfig>>();
+        private Dictionary<Vector3, Stack<Vector3>> _brainFries = new Dictionary<Vector3, Stack<Vector3>>();
 
 #if VRCHAT
         private static bool _haveAMenu;
@@ -119,6 +120,7 @@ namespace GravityController
             {
                 return;
             }
+
             RecalculateGravity = true;
             if (ShowDebugMessages)
             {
@@ -129,7 +131,26 @@ namespace GravityController
                 );
             }
             CurrentGravity = Physics.gravity;
-            BaseGravity = Physics.gravity;
+            if (_brainFries.TryGetValue(CurrentGravity, out var fries) && fries.Count > 0)
+            {
+                CurrentGravity = fries.Pop();
+                if (ShowDebugMessages)
+                {
+                    MelonLogger.Msg($"Safeguard detected brain-fry, setting new default to {FormatVector3(CurrentGravity)} instead!");
+                }
+            }
+
+            if (_activeConfigs.TryGetValue(CurrentGravity, out var currentConfigs) && currentConfigs.Count > 0)
+            {
+                for (var i = currentConfigs.Count - 1; i >= 0; i--)
+                {
+                    if (!currentConfigs[i].holdToActivate) continue;
+                    if (Input.GetKeyDown(currentConfigs[i].trigger)) continue;
+                    SetConfig(currentConfigs[i], false);
+                }
+            }
+
+            BaseGravity = CurrentGravity;
         }
 
         private void ExecuteChanges()
@@ -154,6 +175,8 @@ namespace GravityController
                 return;
             }
 
+            // CurrentGravity will always be the same as Physics.gravity here
+
 
             var newGravity = _activeConfigs.TryGetValue(BaseGravity, out var currentConfigs)
                 ? currentConfigs.Count > 0
@@ -163,23 +186,40 @@ namespace GravityController
 
             newGravity += AdditionalGravity;
 
-            if (ShowDebugMessages)
+            if (newGravity != CurrentGravity)
             {
-                MelonLogger.Msg("Setting gravity from {0} to {1}",
-                    FormatVector3(CurrentGravity),
-                    FormatVector3(newGravity)
-                );
+                if (ShowDebugMessages)
+                {
+                    MelonLogger.Msg("Setting gravity from {0} to {1}",
+                        FormatVector3(CurrentGravity),
+                        FormatVector3(newGravity)
+                    );
+                }
+
+                Vector3 fry = CurrentGravity;
+                if (_brainFries.TryGetValue(CurrentGravity, out var fries) && fries.Count > 0)
+                {
+                    fry = fries.Pop();
+                }
+
+                if (!_brainFries.TryGetValue(newGravity, out var newFries))
+                {
+                    newFries = new Stack<Vector3>();
+                    _brainFries.Add(newGravity, newFries);
+                }
+                newFries.Push(fry);
+
+                CurrentGravity = newGravity;
+                Physics.gravity = newGravity;
             }
 
-            CurrentGravity = newGravity;
-            Physics.gravity = newGravity;
 #if VRCHAT
             _integrator.updateGravityAmount();
 #endif
         }
 
         // NEW in 1.0.6 - Mainly used as utility functions for VRC/ActionMenu Integration.
-#region Direct Methods
+        #region Direct Methods
         // Reset all changes to _defaultGravity. This is always available and DOES NOT RESPECT RISKY CHECK.
         // I chose to do this because being able to reset your gravity to Unity default (or the world's default, really)
         // is something I consider to be a critical failsafe.
@@ -205,11 +245,11 @@ namespace GravityController
         {
             if (ForceDisable) return false;
             AdditionalGravity = new Vector3(0, amt, 0) - BaseGravity;
-            _activeConfigs.Clear();
+            _activeConfigs[BaseGravity].Clear();
             RecalculateGravity = true;
             return true;
         }
-#endregion
+        #endregion
 
         private bool IsEnabled(GravityConfig gravityConfig)
         {
@@ -226,23 +266,24 @@ namespace GravityController
                 var hold = gravityConfig.hold;
 
                 if (trigger == KeyCode.None) continue;
-                if (hold != KeyCode.None && !Input.GetKey(hold)) continue;
+                var isHolding = hold == KeyCode.None || Input.GetKey(hold);
 
                 if (gravityConfig.holdToActivate)
                 {
-                    if (Input.GetKeyDown(gravityConfig.trigger))
-                    {
-                        RunConfig(gravityConfig, true);
-                    }
                     if (Input.GetKeyUp(gravityConfig.trigger))
                     {
-                        RunConfig(gravityConfig, false);
+                        SetConfig(gravityConfig, false);
+                    }
+
+                    if (isHolding && Input.GetKeyDown(gravityConfig.trigger))
+                    {
+                        SetConfig(gravityConfig, true);
                     }
                     continue;
                 }
 
-                if (!Input.GetKeyDown(gravityConfig.trigger)) continue;
-                RunConfig(gravityConfig, !IsEnabled(gravityConfig));
+                if (!isHolding || !Input.GetKeyDown(gravityConfig.trigger)) continue;
+                SetConfig(gravityConfig, !IsEnabled(gravityConfig));
             }
         }
 
@@ -255,8 +296,7 @@ namespace GravityController
             RecalculateGravity = true;
         }
 
-        // Only runs if the keybind is on a toggle.
-        private void RunConfig(GravityConfig gravityConfig, bool enable)
+        private void SetConfig(GravityConfig gravityConfig, bool enable)
         {
             RecalculateGravity = true;
             if (!_activeConfigs.TryGetValue(BaseGravity, out var currentConfigs))
@@ -277,9 +317,7 @@ namespace GravityController
                 return;
             }
 
-            currentConfigs.Remove(gravityConfig);
-
-            if (ShowDebugMessages)
+            if (currentConfigs.Remove(gravityConfig) && ShowDebugMessages)
             {
                 MelonLogger.Msg("Disabling gravity preset {0}.", FormatVector3(gravityConfig.gravity));
             }
