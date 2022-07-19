@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+#if VRCHAT
 using System.Linq;
+#endif
 using GravityController;
 using GravityController.Config;
 using GravityController.Util;
@@ -7,21 +9,34 @@ using MelonLoader;
 using UnityEngine;
 
 [assembly: MelonInfo(typeof(GravityMod), ModInfo.InternalName, ModInfo.Version, ModInfo.Authors, ModInfo.DownloadLink)]
+#if VRCHAT
 [assembly: MelonAdditionalDependencies("VRChatUtilityKit")]
 [assembly: MelonOptionalDependencies("ActionMenuApi")]
+#endif
+
+#if VRCHAT
 [assembly: MelonGame("VRChat", "VRChat")]
+#else
+[assembly: MelonGame("*", "*")]
+#endif
+
 
 namespace GravityController
 {
     public static class ModInfo
     {
         public const string
-            Title = "GravityController",
+#if VRCHAT
+            Title = "VRC Gravity Controller",
+            InternalName = "VrcGravityController",
+#else
+            Title = "Gravity Controller",
+            InternalName = "GravityController",
+#endif
             Copyright = "Copyright © 2022",
             Version = "1.1.0",
             Authors = "ITR13, lil-fluff, BLANKE",
-            DownloadLink = "https://github.com/lil-fluff/MelonGravityController",
-            InternalName = "VRC Gravity Mod";
+            DownloadLink = "https://github.com/lil-fluff/MelonGravityController";
     }
 
     public class GravityMod : MelonMod
@@ -41,18 +56,24 @@ namespace GravityController
 
         private Dictionary<Vector3, List<GravityConfig>> _activeConfigs = new Dictionary<Vector3, List<GravityConfig>>();
 
+#if VRCHAT
         private static bool _haveAMenu;
         private static VRCIntegration _integrator;
+#endif
 
         public override void OnApplicationStart()
         {
             instance = this;
+            MelonConfig.EnsureInit();
+#if VRCHAT
             WorldCheck.Init();
+#endif
 
             // Acquire startup settings:
             BaseGravity = Physics.gravity;
             CurrentGravity = BaseGravity;
 
+#if VRCHAT
             // Detect UIExpansionKit/ActionMenuApi:
             _haveAMenu = MelonHandler.Mods.Any(x => x.Info.Name.Equals("ActionMenuApi"));
 
@@ -65,6 +86,7 @@ namespace GravityController
             {
                 _integrator.InitActionMenu();
             }
+#endif
         }
 
         public override void OnApplicationQuit()
@@ -83,11 +105,13 @@ namespace GravityController
             ExecuteChanges();
         }
 
+#if VRCHAT
         // Call updates to anything changed in the MelonPrefs:
         public override void OnPreferencesSaved()
         {
             _integrator.UpdateFromMelonPrefs();
         }
+#endif
 
         private void CheckForGravityChange()
         {
@@ -149,11 +173,13 @@ namespace GravityController
 
             CurrentGravity = newGravity;
             Physics.gravity = newGravity;
+#if VRCHAT
             _integrator.updateGravityAmount();
+#endif
         }
 
         // NEW in 1.0.6 - Mainly used as utility functions for VRC/ActionMenu Integration.
-        #region Direct Methods
+#region Direct Methods
         // Reset all changes to _defaultGravity. This is always available and DOES NOT RESPECT RISKY CHECK.
         // I chose to do this because being able to reset your gravity to Unity default (or the world's default, really)
         // is something I consider to be a critical failsafe.
@@ -183,7 +209,7 @@ namespace GravityController
             RecalculateGravity = true;
             return true;
         }
-        #endregion
+#endregion
 
         private bool IsEnabled(GravityConfig gravityConfig)
         {

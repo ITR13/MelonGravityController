@@ -14,9 +14,8 @@ namespace GravityController.Util
         private GravityMod _mod;
         private AssetBundle _iconsAssetBundle = null;
 
-        private MelonPreferences_Category _melon_selfCategory;
-        private MelonPreferences_Entry<bool> _melon_showDebugMessages, _melon_useIcons;
-        private MelonPreferences_Entry<float> _melon_increment;
+        private MelonPreferences_Entry<bool> _useIcons;
+        private MelonPreferences_Entry<float> _increment;
 
         private PedalOption _gravityRadialDisplay;
 
@@ -27,10 +26,8 @@ namespace GravityController.Util
             _mod = GravityMod.instance;
 
             // Setup melonprefs:
-            _melon_selfCategory = MelonPreferences.CreateCategory(ModInfo.InternalName);
-            _melon_showDebugMessages = (MelonPreferences_Entry<bool>)_melon_selfCategory.CreateEntry("showDebugMessages", GravityMod.ShowDebugMessages, "Show Debug", false);
-            _melon_useIcons = (MelonPreferences_Entry<bool>)_melon_selfCategory.CreateEntry("showSpecialIcons", GravityMod.ShowSpecialIcons, "Show Icon", "Shows the gravity amout visually when changed as an icon in the action menu.", false);
-            _melon_increment = (MelonPreferences_Entry<float>)_melon_selfCategory.CreateEntry("Increment", GravityMod.Increment, "Increment", "Set the increment of the value that the ActionMenu Adjusts", false);
+            _useIcons = MelonConfig._melon_selfCategory.CreateEntry("showSpecialIcons", GravityMod.ShowSpecialIcons, "Show Icon", "Shows the gravity amout visually when changed as an icon in the action menu.", false);
+            _increment = MelonConfig._melon_selfCategory.CreateEntry("Increment", GravityMod.Increment, "Increment", "Set the increment of the value that the ActionMenu Adjusts", false);
 
             // In case there was a previous setting, sync on start:
             UpdateFromMelonPrefs();
@@ -39,9 +36,9 @@ namespace GravityController.Util
         // Keep vars in sync with config from prefs:
         internal void UpdateFromMelonPrefs()
         {
-            GravityMod.ShowDebugMessages = _melon_showDebugMessages.Value;
-            GravityMod.ShowSpecialIcons = _melon_useIcons.Value;
-            GravityMod.Increment = _melon_increment.Value;
+            GravityMod.ShowDebugMessages = MelonConfig._melon_showDebugMessages.Value;
+            GravityMod.ShowSpecialIcons = _useIcons.Value;
+            GravityMod.Increment = _increment.Value;
         }
 
         // Build and execute ActionMenu
@@ -91,33 +88,31 @@ namespace GravityController.Util
 
                 CustomSubMenu.AddButton("Increase", () =>
                 {
-                    if (_mod.AdjustGravity(-_melon_increment.Value))
-                    {
-                        if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity stronger.");
-                    }
+                    if (!_mod.AdjustGravity(-_increment.Value)) return;
+                    if (!GravityMod.ShowDebugMessages) return;
+                    MelonLogger.Msg("Made gravity stronger.");
                 }, _addIcon);
                 CustomSubMenu.AddButton("Decrease", () =>
                 {
-                    if (_mod.AdjustGravity(_melon_increment.Value))
-                    {
-                        if (GravityMod.ShowDebugMessages) MelonLogger.Msg("Made gravity weaker.");
-                    }
+                    if (!_mod.AdjustGravity(_increment.Value)) return;
+                    if (!GravityMod.ShowDebugMessages) return;
+                    MelonLogger.Msg("Made gravity weaker.");
                 }, _minusIcon);
             }), _gravityIcon);
         }
 
         internal void updateGravityAmount()
         {
-            if (_gravityRadialDisplay != null)
-            {
-                if (GravityMod.ShowSpecialIcons)
-                {
-                    var whichIcon = _mod.CurrentGravity.y > _mod.BaseGravity.y ? _minusIcon :
-                        _mod.CurrentGravity.y < _mod.BaseGravity.y ? _addIcon : _gravityIcon;
-                    _gravityRadialDisplay.prop_Texture2D_0 = whichIcon;
-                }
-                _gravityRadialDisplay.prop_String_0 = $"Gravity: {_mod.CurrentGravity.y}";
-            }
+            if (_gravityRadialDisplay == null) return;
+            _gravityRadialDisplay.prop_String_0 = $"Gravity: {_mod.CurrentGravity.y}";
+            if (!GravityMod.ShowSpecialIcons) return;
+
+            var whichIcon = _mod.CurrentGravity.y > _mod.BaseGravity.y 
+                ? _minusIcon 
+                : _mod.CurrentGravity.y < _mod.BaseGravity.y 
+                    ? _addIcon 
+                    : _gravityIcon;
+            _gravityRadialDisplay.prop_Texture2D_0 = whichIcon;
         }
     }
 }
