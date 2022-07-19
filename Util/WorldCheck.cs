@@ -8,9 +8,15 @@ namespace GravityController.Util
         public static void Init()
         {
             GravityMod.ForceDisable = true;
+            NetworkEvents.OnRoomLeft += () =>
+            {
+                GravityMod.ForceDisable = true;
+                GravityMod.RecalculateGravity = true;
+            };
             VRCUtils.OnEmmWorldCheckCompleted += areRiskyFuncsAllowed =>
             {
                 GravityMod.ForceDisable = !areRiskyFuncsAllowed;
+                GravityMod.RecalculateGravity = true;
             };
         }
     }

@@ -1,7 +1,6 @@
 ﻿using ActionMenuApi.Api;
 using MelonLoader;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -81,7 +80,7 @@ namespace GravityController.Util
                 }, zeroIcon);
 
                 // Adding button to show the gravity amount:
-                gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {mod.get_currentGravity.y}", () => { }, gravityIcon);
+                gravityRadialDisplay = CustomSubMenu.AddButton($"Gravity: {mod.CurrentGravity.y}", () => { }, gravityIcon);
 
                 CustomSubMenu.AddButton("Increase", () => {
                     if (mod.AdjustGravity(-_melon_increment.Value)) {
@@ -101,27 +100,12 @@ namespace GravityController.Util
         internal void updateGravityAmount() {
             if (gravityRadialDisplay != null) {
                 if (GravityMod.ShowSpecialIcons) {
-                    var whichIcon = mod.get_currentGravity.y > mod.get_defaultGravity.y ? minusIcon :
-                        mod.get_currentGravity.y < mod.get_defaultGravity.y ? addIcon : gravityIcon;
+                    var whichIcon = mod.CurrentGravity.y > mod.BaseGravity.y ? minusIcon :
+                        mod.CurrentGravity.y < mod.BaseGravity.y ? addIcon : gravityIcon;
                     gravityRadialDisplay.prop_Texture2D_0 = whichIcon;
                 }
-                gravityRadialDisplay.prop_String_0 = $"Gravity: {mod.get_currentGravity.y}";
+                gravityRadialDisplay.prop_String_0 = $"Gravity: {mod.CurrentGravity.y}";
             }
-        }
-
-        private Texture2D textureFromPng(Image img) {
-            Texture2D tex = new Texture2D(img.Width, img.Height);
-            using (var ms = new MemoryStream()) {
-                try {
-                    img.Save(ms, img.RawFormat);
-                    var result = ImageConversion.LoadImage(tex, ms.ToArray());
-                    if (result) return tex;
-                }
-                catch {
-                    MelonLogger.Error("Could not convert image asset.");
-                }
-            }
-            return null;
         }
     }
 }

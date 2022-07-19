@@ -7,8 +7,6 @@ namespace GravityController.Config {
         public SerializedVector3 gravity = new SerializedVector3(0,0,0);
         public KeyCode hold = KeyCode.LeftControl, trigger = KeyCode.P;
         public bool holdToActivate;
-        [NonSerialized] 
-        internal bool Enabled;
     }
 
     [Serializable]
