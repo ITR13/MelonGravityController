@@ -36,7 +36,7 @@ namespace GravityController
             Copyright = "Copyright © 2022",
             Version = "1.1.0",
             Authors = "ITR13, lil-fluff, BLANKE",
-            DownloadLink = "https://github.com/lil-fluff/MelonGravityController";
+            DownloadLink = "https://github.com/ITR13/MelonGravityController";
     }
 
     public class GravityMod : MelonMod
